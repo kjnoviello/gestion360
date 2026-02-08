@@ -24,6 +24,7 @@ import { formatCurrency } from "../utils/format";
 import { useWorks } from "../hooks/useWork";
 import { formatDate } from "../utils/date";
 
+
 export const Dashboard: React.FC = () => {
   const history = useHistory();
 
