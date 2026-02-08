@@ -114,7 +114,7 @@ export const Dashboard: React.FC = () => {
         <Card isPressable onPress={() => history.push("/clients")}>
           <CardBody className="flex items-center gap-4">
             <Icon icon="lucide:users" width={24} />
-            <div>
+            <div className="flex flex-col items-center">
               <p className="text-small text-default-500">Clientes</p>
               <p className="text-xl font-semibold">{clients.length}</p>
             </div>
@@ -124,7 +124,7 @@ export const Dashboard: React.FC = () => {
         <Card>
           <CardBody className="flex items-center gap-4">
             <Icon icon="lucide:dollar-sign" width={24} />
-            <div>
+            <div className="flex flex-col items-center">
               <p className="text-small text-default-500">Ganancias</p>
               <p className="text-xl font-semibold">
                 {formatCurrency(totalEarnings)}
@@ -136,7 +136,7 @@ export const Dashboard: React.FC = () => {
         <Card>
           <CardBody className="flex items-center gap-4">
             <Icon icon="lucide:calendar" width={24} />
-            <div>
+            <div className="flex flex-col items-center">
               <p className="text-small text-default-500">Trabajos este mes</p>
               <p className="text-xl font-semibold">{worksThisMonth}</p>
             </div>
