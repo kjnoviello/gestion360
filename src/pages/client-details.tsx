@@ -86,7 +86,7 @@ export const ClientDetails: React.FC = () => {
 
   return (
     <Layout title="Detalles del Cliente">
-      <div className="grid gap-6">
+      <div className="gap-6">
         {/* INFO CLIENTE */}
         <Card>
           <CardBody>
@@ -107,7 +107,7 @@ export const ClientDetails: React.FC = () => {
               </Button>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div className="flex flex-col gap-6 mb-6">
               <div>
                 <p className="text-small text-default-500">Teléfono</p>
                 <a

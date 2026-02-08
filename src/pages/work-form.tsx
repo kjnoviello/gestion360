@@ -60,29 +60,33 @@ export const WorkForm: React.FC = () => {
   // ===============================
   // Cargar trabajo si es edición
   // ===============================
-React.useEffect(() => {
-  if (!work) return;
+  React.useEffect(() => {
+    if (!work) return;
 
-  setClientId(work.clientId);
-  setWorkDescription(work.workDescription);
-  setDate(work.date.split("T")[0]);
-  setBudgetAmount(work.budget.amount.toString());
+    setClientId(work.clientId);
+    setWorkDescription(work.workDescription);
+    setDate(work.date.split("T")[0]);
+    setBudgetAmount(work.budget.amount.toString());
 
-  if (work.budget.pdfUrl && work.budget.pdfName) {
-    setBudgetPdf({
-      url: work.budget.pdfUrl,
-      name: work.budget.pdfName,
-    });
-  }
+    if (work.budget.pdfUrl && work.budget.pdfName) {
+      setBudgetPdf({
+        url: work.budget.pdfUrl,
+        name: work.budget.pdfName,
+      });
+    }
 
-  if (work.photo && work.photoName) {
-    setPhoto({
-      url: work.photo,
-      name: work.photoName,
-    });
-  }
-}, [work]);
+    if (work.photo && work.photoName) {
+      setPhoto({
+        url: work.photo,
+        name: work.photoName,
+      });
+    }
+  }, [work]);
 
+  const selectedClient = React.useMemo(
+    () => clients.find((c) => c.id === clientId),
+    [clients, clientId]
+  );
 
   // ===============================
   // Submit
@@ -184,16 +188,21 @@ React.useEffect(() => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Select
                 label="Cliente"
-                selectedKeys={clientId ? [clientId] : []}
+                selectedKeys={clientId ? new Set([clientId]) : new Set()}
                 onSelectionChange={(keys) => {
                   const value = Array.from(keys)[0] as string;
                   setClientId(value);
                 }}
+                renderValue={() =>
+                  selectedClient
+                    ? `${selectedClient.name}${selectedClient.company ? ` (${selectedClient.company})` : ""
+                    }`
+                    : ""
+                }
                 isRequired
               >
-
                 {clients.map((client) => (
-                  <SelectItem key={client.id}>
+                  <SelectItem key={client.id} textValue={client.name}>
                     {client.name}
                     {client.company ? ` (${client.company})` : ""}
                   </SelectItem>
