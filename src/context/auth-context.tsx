@@ -15,6 +15,9 @@ export const AuthContext = createContext<AuthContextType>({
   logout: () => {},
 });
 
+const storedPassword = import.meta.env.VITE_FIREBASE_PASSWORD;
+const storedUser = import.meta.env.VITE_FIREBASE_USER;
+
 interface AuthProviderProps {
   children: React.ReactNode;
 }
@@ -35,7 +38,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string): Promise<boolean> => {
     // For this example, we're using hardcoded credentials
     // In a real app, you would use a proper authentication service
-    if (email === "kjnoviello@gmail.com" && password === "k01164186") {
+    if (email === storedUser && password === storedPassword) {
       localStorage.setItem("isAuthenticated", "true");
       setIsAuthenticated(true);
       addToast({
