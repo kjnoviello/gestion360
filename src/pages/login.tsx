@@ -82,10 +82,6 @@ export const LoginPage: React.FC = () => {
             </Button>
           </form>
           
-          <div className="text-center text-small text-default-500">
-            <p>Usuario de prueba: kjnoviello@gmail.com</p>
-            <p>Contraseña: k01164186</p>
-          </div>
         </CardBody>
       </Card>
     </div>
