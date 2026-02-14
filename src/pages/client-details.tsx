@@ -96,7 +96,7 @@ export const ClientDetails: React.FC = () => {
               <div>
                 <p className="text-small text-default-500">Teléfono</p>
                 <a
-                  href={`tel:${client.phone}`}
+                  href={`https://wa.me/${client.phone}`}
                   className="text-primary hover:underline flex gap-2 items-center"
                 >
                   <Icon icon="lucide:phone" />
