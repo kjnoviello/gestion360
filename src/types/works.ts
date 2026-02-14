@@ -11,7 +11,6 @@ export interface Work {
         pdfName?: string;
     };
 
-    imageUrl?: string;
-    imageName?: string;
+    photo?: string;
     photoName?: string;
 }

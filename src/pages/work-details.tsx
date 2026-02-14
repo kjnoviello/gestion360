@@ -34,19 +34,7 @@ export const WorkDetails: React.FC = () => {
   const [isDeleting, setIsDeleting] = React.useState(false);
 
   const work = getWork(id);
-  console.log("WORK:", work);
   const client = work ? getClient(work.clientId) : undefined;
-
-  const downloadFile = (url: string, filename?: string) => {
-    const cleanName = filename?.replace(/\.[^/.]+$/, "");
-
-    const downloadUrl = url.replace(
-      "/upload/",
-      `/upload/fl_attachment${cleanName ? `:${cleanName}` : ""}/`
-    );
-
-    window.open(downloadUrl, "_blank");
-  };
 
   if (!work) {
     return (
@@ -93,20 +81,21 @@ export const WorkDetails: React.FC = () => {
     }
   };
 
-const downloadPdf = () => {
-  if (!work.budget.pdfUrl) return;
+  const downloadPdf = () => {
+    if (!work.budget.pdfUrl) return;
 
-  const downloadUrl = work.budget.pdfUrl.replace(
-    "/upload/",
-    "/upload/fl_attachment/"
-  );
-
-  window.open(downloadUrl, "_blank");
-};  
+    const link = document.createElement("a");
+    link.href = work.budget.pdfUrl;
+    link.download = work.budget.pdfName || "presupuesto.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <Layout title="Detalles del Trabajo">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* INFO */}
         <div className="lg:col-span-2">
           <Card className="mb-6">
             <CardBody>
@@ -172,8 +161,11 @@ const downloadPdf = () => {
                   </p>
                 </div>
 
-                {work.budget?.pdfUrl && (
-                  <div className="flex gap-2 items-center">
+                {work.budget.pdfUrl && (
+                  <div>
+                    <h3 className="text-small text-default-500 mb-1">
+                      Presupuesto (PDF)
+                    </h3>
                     <Button
                       variant="flat"
                       color="primary"
@@ -181,13 +173,6 @@ const downloadPdf = () => {
                       onPress={downloadPdf}
                     >
                       Descargar PDF
-                    </Button>
-
-                    <Button
-                      variant="light"
-                      onPress={() => window.open(work.budget.pdfUrl, "_blank")}
-                    >
-                      Ver
                     </Button>
                   </div>
                 )}
@@ -214,34 +199,19 @@ const downloadPdf = () => {
           </div>
         </div>
 
+        {/* FOTO */}
         <div>
-          {work.imageUrl ? (
+          {work.photo ? (
             <Card>
               <CardBody>
                 <h3 className="text-medium font-semibold mb-3">
                   Foto del trabajo
                 </h3>
-
                 <img
-                  src={work.imageUrl}
+                  src={work.photo}
                   alt="Foto del trabajo"
-                  className="w-full rounded-lg object-cover mb-3"
+                  className="w-full rounded-lg object-cover"
                 />
-
-                <Button
-                  variant="flat"
-                  color="primary"
-                  startContent={<Icon icon="lucide:download" />}
-                  onPress={() =>
-                    downloadFile(
-                      work.imageUrl!,
-                      work.imageName
-                    )
-                  }
-                >
-                  Descargar imagen
-                </Button>
-
               </CardBody>
             </Card>
           ) : (
@@ -271,6 +241,7 @@ const downloadPdf = () => {
         </div>
       </div>
 
+      {/* MODAL */}
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
