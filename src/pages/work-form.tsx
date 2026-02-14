@@ -172,13 +172,20 @@ export const WorkForm: React.FC = () => {
               <Select
                 label="Cliente"
                 selectedKeys={clientId ? new Set([clientId]) : new Set()}
-                onSelectionChange={(keys) =>
-                  setClientId(Array.from(keys)[0] as string)
+                onSelectionChange={(keys) => {
+                  const value = Array.from(keys)[0] as string;
+                  setClientId(value);
+                }}
+                renderValue={() =>
+                  selectedClient
+                    ? `${selectedClient.name}${selectedClient.company ? ` (${selectedClient.company})` : ""
+                    }`
+                    : ""
                 }
                 isRequired
               >
                 {clients.map((client) => (
-                  <SelectItem key={client.id}>
+                  <SelectItem key={client.id} textValue={client.name}>
                     {client.name}
                     {client.company ? ` (${client.company})` : ""}
                   </SelectItem>
@@ -249,3 +256,33 @@ export const WorkForm: React.FC = () => {
     </Layout>
   );
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
