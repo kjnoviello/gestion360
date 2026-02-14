@@ -23,6 +23,7 @@ import { useClients } from "../hooks/use-clients";
 import { formatCurrency } from "../utils/format";
 import { useWorks } from "../hooks/useWork";
 import { formatDate } from "../utils/date";
+import Loading from "../components/Loading";
 
 
 export const Dashboard: React.FC = () => {
@@ -99,11 +100,7 @@ export const Dashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <Layout title="Dashboard">
-        <div className="flex justify-center py-20">
-          <div className="animate-spin h-10 w-10 border-2 border-primary border-t-transparent rounded-full" />
-        </div>
-      </Layout>
+      <Loading />
     );
   }
 
