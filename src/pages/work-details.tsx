@@ -18,6 +18,8 @@ import { useClients } from "../hooks/use-clients";
 import { formatCurrency } from "../utils/format";
 import { useWorks } from "../hooks/useWork";
 import { formatDate } from "../utils/date";
+import NotFound from "../components/NotFound";
+import Loading from "../components/Loading";
 
 interface RouteParams {
   id: string;
@@ -28,7 +30,7 @@ export const WorkDetails: React.FC = () => {
   const history = useHistory();
 
   const { getClient } = useClients();
-  const { getWork, deleteWork } = useWorks();
+  const { getWork, deleteWork, loading } = useWorks();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isDeleting, setIsDeleting] = React.useState(false);
@@ -48,33 +50,15 @@ export const WorkDetails: React.FC = () => {
     window.open(downloadUrl, "_blank");
   };
 
+  if (loading) {
+    return (
+      <Loading />
+    );
+  }
+
   if (!work) {
     return (
-      <Layout title="Trabajo no encontrado">
-        <Card>
-          <CardBody className="py-8 text-center">
-            <Icon
-              icon="lucide:alert-circle"
-              className="mx-auto text-danger"
-              width={48}
-              height={48}
-            />
-            <h2 className="text-xl font-semibold mt-4">
-              Trabajo no encontrado
-            </h2>
-            <p className="text-default-500 mt-2">
-              El trabajo que buscas no existe o fue eliminado
-            </p>
-            <Button
-              color="primary"
-              className="mt-6"
-              onPress={() => history.push("/dashboard")}
-            >
-              Volver al Dashboard
-            </Button>
-          </CardBody>
-        </Card>
-      </Layout>
+      <NotFound title="Trabajo no encontrado" message="El trabajo que buscas no existe o fue eliminado"/>
     );
   }
 
@@ -93,16 +77,16 @@ export const WorkDetails: React.FC = () => {
     }
   };
 
-const downloadPdf = () => {
-  if (!work.budget.pdfUrl) return;
+  const downloadPdf = () => {
+    if (!work.budget.pdfUrl) return;
 
-  const downloadUrl = work.budget.pdfUrl.replace(
-    "/upload/",
-    "/upload/fl_attachment/"
-  );
+    const downloadUrl = work.budget.pdfUrl.replace(
+      "/upload/",
+      "/upload/fl_attachment/"
+    );
 
-  window.open(downloadUrl, "_blank");
-};  
+    window.open(downloadUrl, "_blank");
+  };
 
   return (
     <Layout title="Detalles del Trabajo">
