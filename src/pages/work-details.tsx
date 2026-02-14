@@ -37,20 +37,6 @@ export const WorkDetails: React.FC = () => {
   console.log("WORK:", work);
   const client = work ? getClient(work.clientId) : undefined;
 
-  // ===============================
-  // Helpers
-  // ===============================
-  // const downloadFile = (url: string, filename?: string) => {
-  //   const cleanName = filename?.replace(/\.[^/.]+$/, ""); // elimina extensión si existe
-
-  //   const downloadUrl = url.replace(
-  //     "/upload/",
-  //     `/upload/fl_attachment${cleanName ? `:${cleanName}` : ""}/`
-  //   );
-
-  //   window.open(downloadUrl, "_blank");
-  // };
-
   const downloadFile = (url: string, filename?: string) => {
     const cleanName = filename?.replace(/\.[^/.]+$/, "");
 
@@ -62,10 +48,6 @@ export const WorkDetails: React.FC = () => {
     window.open(downloadUrl, "_blank");
   };
 
-
-  // ===============================
-  // Estados inválidos
-  // ===============================
   if (!work) {
     return (
       <Layout title="Trabajo no encontrado">
@@ -96,9 +78,6 @@ export const WorkDetails: React.FC = () => {
     );
   }
 
-  // ===============================
-  // Acciones
-  // ===============================
   const handleEdit = () => {
     history.push(`/work/edit/${id}`);
   };
@@ -114,10 +93,6 @@ export const WorkDetails: React.FC = () => {
     }
   };
 
-  // ===============================
-  // Descargar PDF
-  // ===============================
-
 const downloadPdf = () => {
   if (!work.budget.pdfUrl) return;
 
@@ -129,13 +104,9 @@ const downloadPdf = () => {
   window.open(downloadUrl, "_blank");
 };  
 
-  // ===============================
-  // Render
-  // ===============================
   return (
     <Layout title="Detalles del Trabajo">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* ================= INFO ================= */}
         <div className="lg:col-span-2">
           <Card className="mb-6">
             <CardBody>
@@ -201,7 +172,6 @@ const downloadPdf = () => {
                   </p>
                 </div>
 
-                {/* ================= PDF ================= */}
                 {work.budget?.pdfUrl && (
                   <div className="flex gap-2 items-center">
                     <Button
@@ -244,7 +214,6 @@ const downloadPdf = () => {
           </div>
         </div>
 
-        {/* ================= FOTO ================= */}
         <div>
           {work.imageUrl ? (
             <Card>
@@ -302,7 +271,6 @@ const downloadPdf = () => {
         </div>
       </div>
 
-      {/* ================= MODAL ================= */}
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
