@@ -25,7 +25,6 @@ export async function uploadToCloudinary(
     );
 
     if (!res.ok) {
-        console.error("Error subiendo archivo:", await res.text());
         throw new Error("Error subiendo archivo");
     }
 
