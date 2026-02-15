@@ -14,17 +14,12 @@ import { Layout } from "../components/layout";
 import { useClients } from "../hooks/use-clients";
 import { addToast } from "@heroui/react";
 import { useWorks } from "../hooks/useWork";
-import { uploadToCloudinary } from "../lib/cloudinary";
+import { UploadedFile, uploadFile } from "../lib/storage";
 
 interface RouteParams {
   id?: string;
   clientId?: string;
 }
-
-type UploadedFile = {
-  url: string;
-  name: string;
-};
 
 export const WorkForm: React.FC = () => {
   const { id, clientId: urlClientId } = useParams<RouteParams>();
@@ -43,6 +38,7 @@ export const WorkForm: React.FC = () => {
   );
 
   const [budgetPdf, setBudgetPdf] = React.useState<UploadedFile | null>(null);
+  const [existingImageUrl, setExistingImageUrl] = React.useState<string | null>(null);
   const [image, setImage] = React.useState<UploadedFile | null>(null);
 
   const work = React.useMemo(() => {
@@ -58,17 +54,19 @@ export const WorkForm: React.FC = () => {
     setDate(work.date);
     setBudgetAmount(work.budget.amount.toString());
 
-    if (work.budget?.pdfUrl && work.budget?.pdfName) {
+    if (work.budget?.pdfName) {
       setBudgetPdf({
-        url: work.budget.pdfUrl,
+        // url: work.budget.pdfUrl,
         name: work.budget.pdfName,
+        path: work.budget.pdfPath || "",
       });
     }
 
-    if (work.imageUrl && work.imageName) {
+    if (work.imageName) {
       setImage({
-        url: work.imageUrl,
+        // url: work.imageUrl,
         name: work.imageName,
+        path: work.imagePath || "",
       });
     }
   }, [work]);
@@ -84,14 +82,20 @@ export const WorkForm: React.FC = () => {
     if (!e.target.files?.[0]) return;
 
     try {
-      const uploaded = await uploadToCloudinary(e.target.files[0]);
+      const uploaded = await uploadFile(
+        e.target.files[0],
+        "work-images"
+      );
+
       setImage(uploaded);
-    } catch {
+    } catch (error: any) {
       addToast({
         title: "Error",
-        description: "No se pudo subir la imagen",
+        description:
+          error.message || "No se pudo subir la imagen",
         color: "danger",
       });
+      console.error("Error al subir imagen:", error);
     }
   };
 
@@ -101,16 +105,22 @@ export const WorkForm: React.FC = () => {
     if (!e.target.files?.[0]) return;
 
     try {
-      const uploaded = await uploadToCloudinary(e.target.files[0]);
+      const uploaded = await uploadFile(
+        e.target.files[0],
+        "work-pdfs"
+      );
+
       setBudgetPdf(uploaded);
-    } catch {
+    } catch (error: any) {
       addToast({
         title: "Error",
-        description: "No se pudo subir el PDF",
+        description:
+          error.message || "No se pudo subir el PDF",
         color: "danger",
       });
     }
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,15 +144,18 @@ export const WorkForm: React.FC = () => {
         budget: {
           amount: Number(budgetAmount),
           ...(budgetPdf && {
-            pdfUrl: budgetPdf.url,
+            // pdfUrl: budgetPdf.url,
             pdfName: budgetPdf.name,
+            pdfPath: budgetPdf.path,
           }),
         },
         ...(image && {
-          imageUrl: image.url,
+          // imageUrl: image.url,
           imageName: image.name,
+          imagePath: image.path,
         }),
       };
+
 
       if (isEditing && id) {
         await updateWork(id, payload);
@@ -245,10 +258,9 @@ export const WorkForm: React.FC = () => {
                 />
 
                 {image && (
-                  <img
-                    src={image.url}
-                    className="mt-2 max-h-40 rounded-md"
-                  />
+                  <p className="text-small mt-2 text-gray-600">
+                    {image.name}
+                  </p>
                 )}
               </div>
 
