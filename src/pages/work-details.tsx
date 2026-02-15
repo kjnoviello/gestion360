@@ -53,7 +53,7 @@ export const WorkDetails: React.FC = () => {
       setLoadingPdf(true);
 
       const { data, error } = await supabase.storage
-        .from("work-pdfs") // bucket privado
+        .from("work-pdfs")
         .createSignedUrl(work.budget.pdfPath, 60 * 60); // 1 hora
 
       if (!error && data?.signedUrl) {

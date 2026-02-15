@@ -13,12 +13,10 @@ const mapFromDB = (row: any): Work => ({
 
     budget: {
         amount: Number(row.budget_amount),
-        // pdfUrl: row.pdf_url ?? undefined,
         pdfName: row.pdf_name ?? undefined,
         pdfPath: row.pdf_path ?? undefined,
     },
 
-    // imageUrl: row.image_url ?? undefined,
     imageName: row.image_name ?? undefined,
     imagePath: row.image_path ?? undefined,
 });
@@ -47,11 +45,9 @@ export const createWork = async (
 
             budget_amount: data.budget.amount,
 
-            // image_url: data.imageUrl ?? null,
             image_name: data.imageName ?? null,
             image_path: data.imagePath ?? null,
 
-            // pdf_url: data.budget.pdfUrl ?? null,
             pdf_name: data.budget.pdfName ?? null,
             pdf_path: data.budget.pdfPath ?? null,
         })
@@ -66,7 +62,7 @@ export const createWork = async (
 
 export const updateWorkById = async (
     id: string,
-    data: Work
+    data: Partial<Omit<Work, "id" | "createdAt">>
 ): Promise<void> => {
     const { data: existing, error: fetchError } = await supabase
         .from(TABLE)
@@ -111,7 +107,6 @@ export const updateWorkById = async (
 
     if (error) throw error;
 };
-
 
 export const deleteWorkById = async (id: string): Promise<void> => {
     const { data: existing } = await supabase

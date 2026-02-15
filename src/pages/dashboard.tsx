@@ -36,7 +36,6 @@ export const Dashboard: React.FC = () => {
   const [sortBy, setSortBy] = React.useState<"date" | "name" | "amount">("date");
   const [sortDirection, setSortDirection] = React.useState<"asc" | "desc">("desc");
 
-  // 🔹 Filtrado + orden
   const filteredWorks = React.useMemo(() => {
     let result = [...works];
 
@@ -75,7 +74,6 @@ export const Dashboard: React.FC = () => {
     return result;
   }, [works, clients, searchTerm, sortBy, sortDirection]);
 
-  // 🔹 Métricas
   const totalEarnings = React.useMemo(
     () => works.reduce((sum, w) => sum + w.budget.amount, 0),
     [works]
@@ -106,7 +104,6 @@ export const Dashboard: React.FC = () => {
 
   return (
     <Layout title="Dashboard">
-      {/* MÉTRICAS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <Card isPressable onPress={() => history.push("/clients")}>
           <CardBody className="flex items-center gap-4">
@@ -141,7 +138,6 @@ export const Dashboard: React.FC = () => {
         </Card>
       </div>
 
-      {/* LISTA */}
       <Card>
         <CardBody>
           <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
@@ -214,7 +210,6 @@ export const Dashboard: React.FC = () => {
                       <TableCell>{work.workDescription}</TableCell>
                       <TableCell>
                         <Chip size="sm">
-                          {/* {new Date(work.date).toLocaleDateString()} */}
                           {formatDate(work.date)}
                         </Chip>
                       </TableCell>

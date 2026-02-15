@@ -38,7 +38,6 @@ export const WorkForm: React.FC = () => {
   );
 
   const [budgetPdf, setBudgetPdf] = React.useState<UploadedFile | null>(null);
-  const [existingImageUrl, setExistingImageUrl] = React.useState<string | null>(null);
   const [image, setImage] = React.useState<UploadedFile | null>(null);
 
   const work = React.useMemo(() => {
@@ -56,7 +55,6 @@ export const WorkForm: React.FC = () => {
 
     if (work.budget?.pdfName) {
       setBudgetPdf({
-        // url: work.budget.pdfUrl,
         name: work.budget.pdfName,
         path: work.budget.pdfPath || "",
       });
@@ -64,7 +62,6 @@ export const WorkForm: React.FC = () => {
 
     if (work.imageName) {
       setImage({
-        // url: work.imageUrl,
         name: work.imageName,
         path: work.imagePath || "",
       });
@@ -121,7 +118,6 @@ export const WorkForm: React.FC = () => {
     }
   };
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -144,13 +140,11 @@ export const WorkForm: React.FC = () => {
         budget: {
           amount: Number(budgetAmount),
           ...(budgetPdf && {
-            // pdfUrl: budgetPdf.url,
             pdfName: budgetPdf.name,
             pdfPath: budgetPdf.path,
           }),
         },
         ...(image && {
-          // imageUrl: image.url,
           imageName: image.name,
           imagePath: image.path,
         }),

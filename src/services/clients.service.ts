@@ -1,62 +1,87 @@
-import {
-    collection,
-    addDoc,
-    getDocs,
-    getDoc,
-    doc,
-    updateDoc,
-    deleteDoc,
-    query,
-    orderBy,
-    serverTimestamp,
-} from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { supabase } from "../lib/supabase";
 import { Client } from "../types/clients";
 
-const clientsRef = collection(db, "clients");
-
 export const getClients = async (): Promise<Client[]> => {
-    const q = query(clientsRef, orderBy("createdAt", "desc"));
-    const snapshot = await getDocs(q);
+    const { data, error } = await supabase
+        .from("clients")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-    return snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...(doc.data() as Omit<Client, "id">),
+    if (error) throw error;
+
+    return data.map(c => ({
+        id: c.id,
+        name: c.name,
+        phone: c.phone,
+        company: c.company ?? undefined,
+        address: c.address ?? undefined,
+        createdAt: c.created_at,
     }));
 };
 
-export const getClientById = async (id: string): Promise<Client | null> => {
-    const ref = doc(db, "clients", id);
-    const snap = await getDoc(ref);
+export const getClientById = async (
+    id: string
+): Promise<Client | null> => {
+    const { data, error } = await supabase
+        .from("clients")
+        .select("*")
+        .eq("id", id)
+        .single();
 
-    if (!snap.exists()) return null;
+    if (error) {
+        if (error.code === "PGRST116") return null;
+        throw error;
+    }
 
     return {
-        id: snap.id,
-        ...(snap.data() as Omit<Client, "id">),
+        id: data.id,
+        name: data.name,
+        phone: data.phone,
+        company: data.company ?? undefined,
+        address: data.address ?? undefined,
+        createdAt: data.created_at,
     };
 };
 
 export const createClient = async (
     client: Omit<Client, "id" | "createdAt">
 ): Promise<string> => {
-    const docRef = await addDoc(clientsRef, {
-        ...client,
-        createdAt: Date.now(),
-    });
+    const { data, error } = await supabase
+        .from("clients")
+        .insert({
+            name: client.name,
+            phone: client.phone,
+            company: client.company ?? null,
+            address: client.address ?? null,
+            created_at: Date.now(),
+        })
+        .select("id")
+        .single();
 
-    return docRef.id;
+    if (error) throw error;
+
+    return data.id;
 };
 
 export const updateClientById = async (
     id: string,
     data: Partial<Omit<Client, "id" | "createdAt">>
 ) => {
-    const ref = doc(db, "clients", id);
-    await updateDoc(ref, data);
+    const { error } = await supabase
+        .from("clients")
+        .update({
+            ...data,
+        })
+        .eq("id", id);
+
+    if (error) throw error;
 };
 
 export const deleteClientById = async (id: string) => {
-    const ref = doc(db, "clients", id);
-    await deleteDoc(ref);
+    const { error } = await supabase
+        .from("clients")
+        .delete()
+        .eq("id", id);
+
+    if (error) throw error;
 };
