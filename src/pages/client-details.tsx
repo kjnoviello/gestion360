@@ -72,7 +72,7 @@ export const ClientDetails: React.FC = () => {
   return (
     <Layout title="Detalles del Cliente">
       <div className="gap-6">
-        {/* INFO CLIENTE */}
+
         <Card>
           <CardBody>
             <div className="flex justify-between items-start mb-6">
@@ -135,7 +135,6 @@ export const ClientDetails: React.FC = () => {
           </CardBody>
         </Card>
 
-        {/* TRABAJOS */}
         <div>
           <h2 className="text-xl font-semibold mb-4">
             Trabajos realizados
@@ -224,7 +223,6 @@ export const ClientDetails: React.FC = () => {
         </div>
       </div>
 
-      {/* MODAL ELIMINAR */}
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
