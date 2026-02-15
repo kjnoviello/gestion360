@@ -3,13 +3,15 @@ import { Card, CardBody, Input, Button } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { useAuth } from "../hooks/use-auth";
 import { useHistory } from "react-router-dom";
+import { addToast } from "@heroui/react";
+
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
-  const { login } = useAuth();
+  const { login, credentialError } = useAuth();
   const history = useHistory();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -18,8 +20,19 @@ export const LoginPage: React.FC = () => {
 
     try {
       const success = await login(email, password);
+      console.log(success);
+
       if (success) {
+        addToast({
+          title: "Bienvenido",
+          color: "success",
+        });
         history.push("/dashboard");
+      } else {
+        addToast({
+          title: credentialError || "Credenciales inválidas",
+          color: "danger",
+        });
       }
     } finally {
       setIsLoading(false);

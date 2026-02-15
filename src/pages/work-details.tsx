@@ -21,6 +21,7 @@ import { formatDate } from "../utils/date";
 import NotFound from "../components/NotFound";
 import Loading from "../components/Loading";
 import { supabase } from "../lib/supabase";
+import LoadingFile from "../components/LoadingFile";
 
 interface RouteParams {
   id: string;
@@ -88,18 +89,6 @@ export const WorkDetails: React.FC = () => {
 
     generateImageSignedUrl();
   }, [work]);
-
-
-  // const downloadFile = (url: string, filename?: string) => {
-  //   const cleanName = filename?.replace(/\.[^/.]+$/, "");
-
-  //   const downloadUrl = url.replace(
-  //     "/upload/",
-  //     `/upload/fl_attachment${cleanName ? `:${cleanName}` : ""}/`
-  //   );
-
-  //   window.open(downloadUrl, "_blank");
-  // };
 
   const downloadPdf = () => {
     if (!pdfUrl) return;
@@ -202,27 +191,34 @@ export const WorkDetails: React.FC = () => {
                   </p>
                 </div>
 
-                {pdfUrl && (
-                  <div className="flex gap-2 items-center">
-                    <Button
-                      variant="flat"
-                      color="primary"
-                      startContent={<Icon icon="lucide:file-text" />}
-                      onPress={downloadPdf}
-                      isLoading={loadingPdf}
-                    >
-                      Descargar PDF
-                    </Button>
+                {loadingPdf ?
+                  <LoadingFile />
+                  :
+                  <>
+                    {pdfUrl && (
+                      <div className="flex gap-2 items-center">
+                        <Button
+                          variant="flat"
+                          color="primary"
+                          startContent={<Icon icon="lucide:file-text" />}
+                          onPress={downloadPdf}
+                          isLoading={loadingPdf}
+                        >
+                          Descargar PDF
+                        </Button>
 
-                    <Button
-                      variant="light"
-                      onPress={() => window.open(pdfUrl, "_blank")}
-                      isLoading={loadingPdf}
-                    >
-                      Ver
-                    </Button>
-                  </div>
-                )}
+                        <Button
+                          variant="light"
+                          onPress={() => window.open(pdfUrl, "_blank")}
+                          isLoading={loadingPdf}
+                        >
+                          Ver
+                        </Button>
+                      </div>
+                    )}
+                  </>
+                }
+
               </div>
             </CardBody>
           </Card>
@@ -247,53 +243,61 @@ export const WorkDetails: React.FC = () => {
         </div>
 
         <div>
-          {imageUrl ? (
-            <Card>
-              <CardBody>
-                <h3 className="text-medium font-semibold mb-3">
-                  Foto del trabajo
-                </h3>
 
-                <img
-                  src={imageUrl}
-                  alt="Foto del trabajo"
-                  className="w-full rounded-lg object-cover mb-3"
-                />
+          {loadingImage ?
+            <LoadingFile />
+            :
+            <>
+              {imageUrl ? (
+                <Card>
+                  <CardBody>
+                    <h3 className="text-medium font-semibold mb-3">
+                      Foto del trabajo
+                    </h3>
 
-                <Button
-                  variant="flat"
-                  color="primary"
-                  startContent={<Icon icon="lucide:download" />}
-                  onPress={() => window.open(imageUrl!, "_blank")}
-                >
-                  Descargar imagen
-                </Button>
-              </CardBody>
-            </Card>
-          ) : (
-            <Card>
-              <CardBody className="py-8 text-center">
-                <Icon
-                  icon="lucide:image"
-                  className="mx-auto text-default-300"
-                  width={48}
-                  height={48}
-                />
-                <p className="text-default-500 mt-4">
-                  No hay foto disponible
-                </p>
-                <Button
-                  variant="flat"
-                  color="primary"
-                  className="mt-4"
-                  onPress={handleEdit}
-                  startContent={<Icon icon="lucide:plus" />}
-                >
-                  Agregar foto
-                </Button>
-              </CardBody>
-            </Card>
-          )}
+                    <img
+                      src={imageUrl}
+                      alt="Foto del trabajo"
+                      className="w-full rounded-lg object-cover mb-3"
+                    />
+
+                    <Button
+                      variant="flat"
+                      color="primary"
+                      startContent={<Icon icon="lucide:download" />}
+                      onPress={() => window.open(imageUrl!, "_blank")}
+                    >
+                      Descargar imagen
+                    </Button>
+                  </CardBody>
+                </Card>
+              ) : (
+                <Card>
+                  <CardBody className="py-8 text-center">
+                    <Icon
+                      icon="lucide:image"
+                      className="mx-auto text-default-300"
+                      width={48}
+                      height={48}
+                    />
+                    <p className="text-default-500 mt-4">
+                      No hay foto disponible
+                    </p>
+                    <Button
+                      variant="flat"
+                      color="primary"
+                      className="mt-4"
+                      onPress={handleEdit}
+                      startContent={<Icon icon="lucide:plus" />}
+                    >
+                      Agregar foto
+                    </Button>
+                  </CardBody>
+                </Card>
+              )}
+            </>
+          }
+
         </div>
       </div>
 

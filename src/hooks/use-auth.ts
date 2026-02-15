@@ -7,6 +7,7 @@ export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [credentialError, setCredentialError] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -32,6 +33,7 @@ export function useAuth() {
       await signIn(email, password);
       return true;
     } catch {
+      setCredentialError("Credenciales inválidas. Por favor, intenta de nuevo.");
       return false;
     }
   }, []);
@@ -47,5 +49,6 @@ export function useAuth() {
     isLoading,
     login,
     logout,
+    credentialError
   };
 }
