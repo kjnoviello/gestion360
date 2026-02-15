@@ -62,7 +62,7 @@ export const createWork = async (
 
 export const updateWorkById = async (
     id: string,
-    data: Work
+    data: Partial<Omit<Work, "id" | "createdAt">>
 ): Promise<void> => {
     const { data: existing, error: fetchError } = await supabase
         .from(TABLE)
@@ -107,7 +107,6 @@ export const updateWorkById = async (
 
     if (error) throw error;
 };
-
 
 export const deleteWorkById = async (id: string): Promise<void> => {
     const { data: existing } = await supabase
