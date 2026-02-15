@@ -7,10 +7,10 @@ export interface Work {
 
     budget: {
         amount: number;
-        pdfUrl?: string;
         pdfName?: string;
+        pdfPath?: string;
     };
 
-    photo?: string;
-    photoName?: string;
+    imageName?: string;
+    imagePath?: string;
 }

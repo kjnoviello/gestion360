@@ -23,6 +23,7 @@ import { useClients } from "../hooks/use-clients";
 import { formatCurrency } from "../utils/format";
 import { useWorks } from "../hooks/useWork";
 import { formatDate } from "../utils/date";
+import Loading from "../components/Loading";
 
 
 export const Dashboard: React.FC = () => {
@@ -35,7 +36,6 @@ export const Dashboard: React.FC = () => {
   const [sortBy, setSortBy] = React.useState<"date" | "name" | "amount">("date");
   const [sortDirection, setSortDirection] = React.useState<"asc" | "desc">("desc");
 
-  // 🔹 Filtrado + orden
   const filteredWorks = React.useMemo(() => {
     let result = [...works];
 
@@ -74,7 +74,6 @@ export const Dashboard: React.FC = () => {
     return result;
   }, [works, clients, searchTerm, sortBy, sortDirection]);
 
-  // 🔹 Métricas
   const totalEarnings = React.useMemo(
     () => works.reduce((sum, w) => sum + w.budget.amount, 0),
     [works]
@@ -99,22 +98,17 @@ export const Dashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <Layout title="Dashboard">
-        <div className="flex justify-center py-20">
-          <div className="animate-spin h-10 w-10 border-2 border-primary border-t-transparent rounded-full" />
-        </div>
-      </Layout>
+      <Loading />
     );
   }
 
   return (
     <Layout title="Dashboard">
-      {/* MÉTRICAS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <Card isPressable onPress={() => history.push("/clients")}>
           <CardBody className="flex items-center gap-4">
             <Icon icon="lucide:users" width={24} />
-            <div>
+            <div className="flex flex-col items-center">
               <p className="text-small text-default-500">Clientes</p>
               <p className="text-xl font-semibold">{clients.length}</p>
             </div>
@@ -124,7 +118,7 @@ export const Dashboard: React.FC = () => {
         <Card>
           <CardBody className="flex items-center gap-4">
             <Icon icon="lucide:dollar-sign" width={24} />
-            <div>
+            <div className="flex flex-col items-center">
               <p className="text-small text-default-500">Ganancias</p>
               <p className="text-xl font-semibold">
                 {formatCurrency(totalEarnings)}
@@ -136,7 +130,7 @@ export const Dashboard: React.FC = () => {
         <Card>
           <CardBody className="flex items-center gap-4">
             <Icon icon="lucide:calendar" width={24} />
-            <div>
+            <div className="flex flex-col items-center">
               <p className="text-small text-default-500">Trabajos este mes</p>
               <p className="text-xl font-semibold">{worksThisMonth}</p>
             </div>
@@ -144,7 +138,6 @@ export const Dashboard: React.FC = () => {
         </Card>
       </div>
 
-      {/* LISTA */}
       <Card>
         <CardBody>
           <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
@@ -217,7 +210,6 @@ export const Dashboard: React.FC = () => {
                       <TableCell>{work.workDescription}</TableCell>
                       <TableCell>
                         <Chip size="sm">
-                          {/* {new Date(work.date).toLocaleDateString()} */}
                           {formatDate(work.date)}
                         </Chip>
                       </TableCell>

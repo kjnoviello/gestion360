@@ -23,6 +23,8 @@ import { Layout } from "../components/layout";
 import { useClients } from "../hooks/use-clients";
 import { formatCurrency } from "../utils/format";
 import { useWorks } from "../hooks/useWork";
+import Loading from "../components/Loading";
+import NotFound from "../components/NotFound";
 
 interface RouteParams {
   id: string;
@@ -32,7 +34,7 @@ export const ClientDetails: React.FC = () => {
   const { id } = useParams<RouteParams>();
   const history = useHistory();
 
-  const { getClient, deleteClient } = useClients();
+  const { getClient, deleteClient, loading } = useClients();
   const { getClientWorks } = useWorks();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -44,32 +46,15 @@ export const ClientDetails: React.FC = () => {
     [client, id, getClientWorks]
   );
 
+    if (loading) {
+    return (
+      <Loading />
+    );
+  }
+
   if (!client) {
     return (
-      <Layout title="Cliente no encontrado">
-        <Card>
-          <CardBody className="py-10 text-center">
-            <Icon
-              icon="lucide:alert-circle"
-              className="mx-auto text-danger"
-              width={48}
-            />
-            <h2 className="text-xl font-semibold mt-4">
-              Cliente no encontrado
-            </h2>
-            <p className="text-default-500 mt-2">
-              El cliente no existe o fue eliminado
-            </p>
-            <Button
-              color="primary"
-              className="mt-6"
-              onPress={() => history.push("/dashboard")}
-            >
-              Volver al Dashboard
-            </Button>
-          </CardBody>
-        </Card>
-      </Layout>
+      <NotFound title="Cliente no encontrado" message="El cliente que buscas no existe o fue eliminado"/>
     );
   }
 
@@ -86,8 +71,8 @@ export const ClientDetails: React.FC = () => {
 
   return (
     <Layout title="Detalles del Cliente">
-      <div className="grid gap-6">
-        {/* INFO CLIENTE */}
+      <div className="gap-6">
+
         <Card>
           <CardBody>
             <div className="flex justify-between items-start mb-6">
@@ -107,11 +92,11 @@ export const ClientDetails: React.FC = () => {
               </Button>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div className="flex flex-col gap-6 mb-6">
               <div>
                 <p className="text-small text-default-500">Teléfono</p>
                 <a
-                  href={`tel:${client.phone}`}
+                  href={`https://wa.me/${client.phone}`}
                   className="text-primary hover:underline flex gap-2 items-center"
                 >
                   <Icon icon="lucide:phone" />
@@ -150,7 +135,6 @@ export const ClientDetails: React.FC = () => {
           </CardBody>
         </Card>
 
-        {/* TRABAJOS */}
         <div>
           <h2 className="text-xl font-semibold mb-4">
             Trabajos realizados
@@ -239,7 +223,6 @@ export const ClientDetails: React.FC = () => {
         </div>
       </div>
 
-      {/* MODAL ELIMINAR */}
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (

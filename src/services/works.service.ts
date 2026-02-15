@@ -1,77 +1,132 @@
-import {
-    collection,
-    addDoc,
-    getDocs,
-    getDoc,
-    doc,
-    updateDoc,
-    deleteDoc,
-    query,
-    where,
-    orderBy,
-} from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { supabase } from "../lib/supabase";
+import { deleteFile } from "../lib/storage";
 import { Work } from "../types/works";
 
-const worksRef = collection(db, "works");
+const TABLE = "works";
+
+const mapFromDB = (row: any): Work => ({
+    id: row.id,
+    clientId: row.client_id,
+    workDescription: row.work_description,
+    date: row.date,
+    createdAt: row.created_at,
+
+    budget: {
+        amount: Number(row.budget_amount),
+        pdfName: row.pdf_name ?? undefined,
+        pdfPath: row.pdf_path ?? undefined,
+    },
+
+    imageName: row.image_name ?? undefined,
+    imagePath: row.image_path ?? undefined,
+});
 
 export const getWorks = async (): Promise<Work[]> => {
-    const q = query(worksRef, orderBy("createdAt", "desc"));
-    const snapshot = await getDocs(q);
+    const { data, error } = await supabase
+        .from(TABLE)
+        .select("*")
+        .order("created_at", { ascending: false });
 
-    return snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...(doc.data() as Omit<Work, "id">),
-    }));
-};
+    if (error) throw error;
 
-export const getWorkById = async (id: string): Promise<Work | null> => {
-    const ref = doc(db, "works", id);
-    const snap = await getDoc(ref);
-
-    if (!snap.exists()) return null;
-
-    return {
-        id: snap.id,
-        ...(snap.data() as Omit<Work, "id">),
-    };
-};
-
-export const getWorksByClient = async (clientId: string): Promise<Work[]> => {
-    const q = query(
-        worksRef,
-        where("clientId", "==", clientId),
-        orderBy("createdAt", "desc")
-    );
-
-    const snapshot = await getDocs(q);
-
-    return snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...(doc.data() as Omit<Work, "id">),
-    }));
+    return data.map(mapFromDB);
 };
 
 export const createWork = async (
-    work: Omit<Work, "id" | "createdAt">
+    data: Omit<Work, "id" | "createdAt">
 ): Promise<string> => {
-    const docRef = await addDoc(worksRef, {
-        ...work,
-        createdAt: Date.now(),
-    });
+    const { data: inserted, error } = await supabase
+        .from(TABLE)
+        .insert({
+            client_id: data.clientId,
+            work_description: data.workDescription,
+            date: data.date,
+            created_at: Date.now(),
 
-    return docRef.id;
+            budget_amount: data.budget.amount,
+
+            image_name: data.imageName ?? null,
+            image_path: data.imagePath ?? null,
+
+            pdf_name: data.budget.pdfName ?? null,
+            pdf_path: data.budget.pdfPath ?? null,
+        })
+        .select()
+        .single();
+
+    if (error) throw error;
+
+    return inserted.id;
 };
+
 
 export const updateWorkById = async (
     id: string,
     data: Partial<Omit<Work, "id" | "createdAt">>
-) => {
-    const ref = doc(db, "works", id);
-    await updateDoc(ref, data);
+): Promise<void> => {
+    const { data: existing, error: fetchError } = await supabase
+        .from(TABLE)
+        .select("image_path, pdf_path, image_name, pdf_name")
+        .eq("id", id)
+        .single();
+
+    if (fetchError) throw fetchError;
+
+    // 🔹 SOLO borrar si el path cambió
+    if (
+        data.imagePath &&
+        existing?.image_path &&
+        data.imagePath !== existing.image_path
+    ) {
+        await deleteFile("work-images", existing.image_path);
+    }
+
+    if (
+        data.budget.pdfPath &&
+        existing?.pdf_path &&
+        data.budget.pdfPath !== existing.pdf_path
+    ) {
+        await deleteFile("work-pdfs", existing.pdf_path);
+    }
+
+    const { error } = await supabase
+        .from(TABLE)
+        .update({
+            client_id: data.clientId,
+            work_description: data.workDescription,
+            date: data.date,
+            budget_amount: data.budget.amount,
+
+            image_name: data.imageName ?? existing?.image_name ?? null,
+            image_path: data.imagePath ?? existing?.image_path ?? null,
+
+            pdf_name: data.budget.pdfName ?? existing?.pdf_name ?? null,
+            pdf_path: data.budget.pdfPath ?? existing?.pdf_path ?? null,
+        })
+        .eq("id", id);
+
+    if (error) throw error;
 };
 
-export const deleteWorkById = async (id: string) => {
-    const ref = doc(db, "works", id);
-    await deleteDoc(ref);
+export const deleteWorkById = async (id: string): Promise<void> => {
+    const { data: existing } = await supabase
+        .from(TABLE)
+        .select("image_path, pdf_path")
+        .eq("id", id)
+        .single();
+
+    if (existing?.image_path) {
+        await deleteFile("work-images", existing.image_path);
+    }
+
+    if (existing?.pdf_path) {
+        await deleteFile("work-pdfs", existing.pdf_path);
+    }
+
+    const { error } = await supabase
+        .from(TABLE)
+        .delete()
+        .eq("id", id);
+
+    if (error) throw error;
 };

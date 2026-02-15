@@ -146,7 +146,7 @@ export const ClientsList: React.FC = () => {
                     <TableCell>{client.company || "-"}</TableCell>
                     <TableCell>
                       <a
-                        href={`tel:${client.phone}`}
+                        href={`https://wa.me/${client.phone}`}
                         className="text-primary hover:underline"
                       >
                         {client.phone}
