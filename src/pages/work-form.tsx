@@ -220,7 +220,30 @@ export const WorkForm: React.FC = () => {
 
               <div>
                 <p className="text-small mb-2">Imagen (opcional)</p>
-                <input type="file" accept="image/*" onChange={handleImageUpload} />
+
+
+                <label
+                  htmlFor="budget-image"
+                  className="inline-flex items-center px-4 py-2
+               bg-primary text-white rounded-md
+               cursor-pointer hover:bg-primary/90
+               transition"
+                >
+                  {image ?
+                    "Cambiar Imagen"
+                    :
+                    "Subir Imagen"
+                  }
+                </label>
+
+                <input
+                  id="budget-image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+
                 {image && (
                   <img
                     src={image.url}
@@ -231,13 +254,33 @@ export const WorkForm: React.FC = () => {
 
               <div>
                 <p className="text-small mb-2">Presupuesto PDF (opcional)</p>
+
+                <label
+                  htmlFor="budget-pdf"
+                  className="inline-flex items-center px-4 py-2
+               bg-primary text-white rounded-md
+               cursor-pointer hover:bg-primary/90
+               transition"
+                >
+                  {budgetPdf ?
+                    "Cambiar PDF"
+                    :
+                    "Subir PDF"
+                  }
+                </label>
+
                 <input
+                  id="budget-pdf"
                   type="file"
                   accept="application/pdf"
                   onChange={handlePdfUpload}
+                  className="hidden"
                 />
+
                 {budgetPdf && (
-                  <p className="text-small mt-2">{budgetPdf.name}</p>
+                  <p className="text-small mt-2 text-gray-600">
+                    {budgetPdf.name}
+                  </p>
                 )}
               </div>
             </div>

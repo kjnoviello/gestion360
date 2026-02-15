@@ -85,7 +85,8 @@ export const Layout: React.FC<LayoutProps> = ({ children, title }) => {
 
       <footer className="py-4 px-6 border-t border-divider">
         <div className="container mx-auto text-center text-default-500 text-sm">
-          © {new Date().getFullYear()} Gestión de Clientes y Ganancias
+          © {new Date().getFullYear()} Gestión de Clientes y Ganancias por 
+          <a href="https://kevinjoelnoviello.vercel.app/" target="_blank" className="text-primary hover:underline mx-1">Kevin Joel Noviello</a>. Todos los derechos reservados.
         </div>
       </footer>
     </div>
